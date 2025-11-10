@@ -19,4 +19,20 @@ async getUser ({userId} : {userId:string}) {
   })
   return user ; 
 }
+
+async updateUser({
+  userId,
+  data,
+}: {
+  userId: string;
+  data: { firstname?: string };
+}) {
+  const updated = await this.prisma.user.update({
+    where: { id: userId },
+    data,
+    select: { id: true, email: true, firstname: true },
+  });
+  return updated;
+}
+
 }

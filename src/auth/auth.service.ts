@@ -4,7 +4,7 @@ import { createId } from '@paralleldrive/cuid2';
 import { compare, hash } from 'bcrypt';
 import { MailerService } from 'src/mailer.service';
 import { PrismaService } from 'src/prisma.service';
-
+import { ChangePasswordDto } from 'src/dto/change-password.dto';
 import { UserPayload } from './jwt.strategy';
 import { LogUserDto } from 'src/dto/log-user.dto';
 import { CreateUserDto } from 'src/dto/create-user.dto';
@@ -86,6 +86,35 @@ export class AuthService {
       };
     }
   }
+
+
+
+async changePassword({
+  userId,
+  dto,
+}: {
+  userId: string;
+  dto: ChangePasswordDto;
+}) {
+  const user = await this.prisma.user.findUnique({ where: { id: userId } });
+  if (!user) throw new Error("L'utilisateur n'existe pas.");
+
+  const ok = await this.isPasswordValid({
+    password: dto.currentPassword,
+    hashedPassword: user.password,
+  });
+  if (!ok) throw new Error('Mot de passe actuel invalide.');
+
+  const hashed = await this.hashPassword({ password: dto.newPassword });
+  await this.prisma.user.update({
+    where: { id: userId },
+    data: { password: hashed },
+  });
+
+  return { error: false, message: 'Mot de passe mis à jour.' };
+}
+
+
 
   private async hashPassword({ password }: { password: string }) {
     const hashedPassword = await hash(password, 10);

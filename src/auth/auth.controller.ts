@@ -4,6 +4,7 @@ import { UserService } from 'src/user/user.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import type { RequestWithUser } from './jwt.strategy';
 import { ResetUserPasswordDto } from 'src/dto/reset-user-password.dto';
+import { ChangePasswordDto } from 'src/dto/change-password.dto';
 export type AuthBody = {email:string;password:string ;}
 export type CreateUser = {email: string ; firstname : string ; password : string ;}
 @Controller('auth')
@@ -42,12 +43,17 @@ export class AuthController {
   }
    
 
-    @UseGuards(JwtAuthGuard)
     @Get() 
     async authenticateUser (@Request() req : RequestWithUser) {
         console.log(req.user.userId) ;
         return await this.userService.getUser({userId : req.user.userId}) ; 
     }
+        @UseGuards(JwtAuthGuard)
+
+    @Post('change-password')
+    async changePassword(@Request() req: RequestWithUser, @Body() dto: ChangePasswordDto) {
+       return this.authService.changePassword({ userId: req.user.userId, dto });
+        }
     
     
 }
