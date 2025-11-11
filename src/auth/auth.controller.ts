@@ -42,14 +42,17 @@ export class AuthController {
     });
   }
    
+      @UseGuards(JwtAuthGuard)
 
     @Get() 
     async authenticateUser (@Request() req : RequestWithUser) {
         console.log(req.user.userId) ;
         return await this.userService.getUser({userId : req.user.userId}) ; 
     }
-        @UseGuards(JwtAuthGuard)
 
+
+
+    @UseGuards(JwtAuthGuard)
     @Post('change-password')
     async changePassword(@Request() req: RequestWithUser, @Body() dto: ChangePasswordDto) {
        return this.authService.changePassword({ userId: req.user.userId, dto });

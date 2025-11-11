@@ -7,7 +7,6 @@ import { UpdateUserDto } from 'src/dto/update-user.dto';
 @Controller('users')
 export class UserController {
   constructor(private readonly userService:UserService) {}
-  @UseGuards(JwtAuthGuard)
 
  @Get()
   getUsers() {  
@@ -17,6 +16,7 @@ export class UserController {
   getUser(@Param('userId') userId:string) {
     return this.userService.getUser({userId})
   }
+  @UseGuards(JwtAuthGuard)
 
    @Patch('me')
   async updateMe(@Request() req: RequestWithUser, @Body() dto: UpdateUserDto) {
